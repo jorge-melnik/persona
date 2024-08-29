@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Listado de Personas</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Listado de Personas</h1>
+      <table id="personasTable">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Correo Electrónico</th>
+            <th>Cédula</th>
+            <th>RUT</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Los datos se llenarán aquí con JavaScript -->
+        </tbody>
+      </table>
+      <p id="errorMessage" class="error"></p>
+      <button id="registroButton">Ir a Registro</button>
+    </div>
+
+    <script>
+      // Función para obtener datos de personas y llenar la tabla
+      async function obtenerPersonas() {
+        try {
+          const response = await fetch("http://localhost:3000/personas");
+          if (!response.ok) throw new Error("Error al obtener los datos");
+
+          const personas = await response.json();
+          const tableBody = document.querySelector("#personasTable tbody");
+
+          // Limpiar la tabla antes de llenarla
+          tableBody.innerHTML = "";
+
+          personas.forEach((persona) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+              <td>${persona.nombre}</td>
+              <td>${persona.apellido}</td>
+              <td>${persona.email}</td>
+              <td>${persona.cedula}</td>
+              <td>${persona.rut}</td>
+            `;
+            tableBody.appendChild(row);
+          });
+        } catch (error) {
+          document.getElementById(
+            "errorMessage"
+          ).textContent = `Error: ${error.message}`;
+        }
+      }
+
+      // Llamar a la función al cargar la página
+      document.addEventListener("DOMContentLoaded", obtenerPersonas);
+
+      // Redirigir al formulario de registro
+      document
+        .getElementById("registroButton")
+        .addEventListener("click", () => {
+          window.location.href = "registrar.html";
+        });
+    </script>
+  </body>
+</html>

@@ -10,3 +10,10 @@ services:
       - 3000:3000
     volumes:
       - ./backend:/backend
+  frontend:
+    image: nginx:alpine
+    container_name: frontend
+    ports:
+      - 80:80
+    volumes:
+      - ./frontend/:/usr/share/nginx/html
