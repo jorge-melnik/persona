@@ -1,6 +1,12 @@
 import { FastifyPluginAsync, FastifyPluginOptions } from "fastify";
 import { FastifyInstance } from "fastify/types/instance.js";
-import { PersonaType } from "../../tipos/persona.js";
+import {
+  PersonaPostSchema,
+  PersonaPostType,
+  PersonaSchema,
+  PersonaType,
+} from "../../tipos/persona.js";
+import db from "../../services/db.js";
 
 const personas: PersonaType[] = [
   {
@@ -18,15 +24,49 @@ const personaRoute: FastifyPluginAsync = async (
 ): Promise<void> => {
   fastify.get("/", {
     handler: async function (request, reply) {
-      return personas;
+      const res = await db.query("SELECT * FROM public.personas");
+      return res.rows;
     },
   });
 
   fastify.post("/", {
+    schema: {
+      body: PersonaPostSchema,
+      response: {
+        200: {
+          description: "Listado de usuarios",
+          content: {
+            "application/json": {
+              schema: PersonaSchema,
+            },
+          },
+        },
+      },
+    },
+    preHandler: async function (request, reply) {
+      const personaPost = request.body as PersonaPostType;
+      if (personaPost.contraseña !== personaPost.repetirContraseña)
+        reply.badRequest("Las contraseñas no coinciden");
+      //TODO: acá también podría hacer la verificación con los algoritmos de cedula y rut.
+    },
     handler: async function (request, reply) {
-      const personaPost = request.body as PersonaType;
-      personas.push(personaPost);
-      return personaPost;
+      const personaPost = request.body as PersonaPostType;
+
+      const res = await db.query(
+        `
+        INSERT INTO public.personas (nombre, apellido,email,cedula,rut, contraseña) 
+          VALUES($1,$2,$3,$4,$5,crypt($6, gen_salt('bf'))) RETURNING *;
+      `,
+        [
+          personaPost.nombre,
+          personaPost.apellido,
+          personaPost.email,
+          personaPost.cedula,
+          personaPost.rut,
+          personaPost.contraseña,
+        ]
+      );
+      return res.rows[0];
     },
   });
 };

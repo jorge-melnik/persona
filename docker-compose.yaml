@@ -10,10 +10,35 @@ services:
       - 3000:3000
     volumes:
       - ./backend:/backend
+    environment:
+      - PGDATABASE=${PGDATABASE}
+      - PGUSER=${PGUSER}
+      - PGPASSWORD=${PGPASSWORD}
+      - PGHOST=${PGHOST}
   frontend:
     image: nginx:alpine
     container_name: frontend
-    ports:
-      - 80:80
     volumes:
       - ./frontend/:/usr/share/nginx/html
+  database:
+    env_file:
+      - .env
+    image: database:production
+    container_name: database
+    build:
+      context: ./database
+    environment:
+      - POSTGRES_DB=${PGDATABASE}
+      - POSTGRES_USER=${PGUSER}
+      - POSTGRES_PASSWORD=${PGPASSWORD}
+    ports:
+      - 5432:5432
+  proxy:
+    image: proxy
+    container_name: proxy
+    build: ./proxy
+    ports:
+      - 80:80
+    depends_on:
+      - frontend
+      - backend

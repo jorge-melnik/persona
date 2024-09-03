@@ -21,6 +21,7 @@ export const PersonaSchema = Type.Object({
 });
 
 export const PersonaPostSchema = Type.Object({
+  ...PersonaSchema.properties,
   contraseña: Type.String({
     minLength: 8,
     maxLength: 20,
