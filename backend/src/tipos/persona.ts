@@ -12,13 +12,16 @@ const cedulaRegex = /^[1-9]{1}\.[0-9]{3}\.[0-9]{3}-[0-9]{1}$/;
 // Expresión regular para el formato del RUT
 const rutRegex = /^\d{12}$/;
 
-export const PersonaSchema = Type.Object({
-  nombre: Type.String({ minLength: 2, maxLength: 50 }),
-  apellido: Type.String({ minLength: 2, maxLength: 50 }),
-  email: Type.String({ format: "email" }),
-  cedula: Type.String({ pattern: cedulaRegex.source }),
-  rut: Type.String({ pattern: rutRegex.source }),
-});
+export const PersonaSchema = Type.Object(
+  {
+    nombre: Type.String({ minLength: 2, maxLength: 50 }),
+    apellido: Type.String({ minLength: 2, maxLength: 50 }),
+    email: Type.String({ format: "email" }),
+    cedula: Type.String({ pattern: cedulaRegex.source }),
+    rut: Type.String({ pattern: rutRegex.source }),
+  },
+  { $id: "PersonaSchema" }
+);
 
 export const PersonaPostSchema = Type.Object({
   ...PersonaSchema.properties,

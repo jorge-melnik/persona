@@ -7,6 +7,7 @@ import {
   PersonaType,
 } from "../../tipos/persona.js";
 import db from "../../services/db.js";
+import { Type } from "@sinclair/typebox";
 
 const personas: PersonaType[] = [
   {
@@ -23,6 +24,22 @@ const personaRoute: FastifyPluginAsync = async (
   opts: FastifyPluginOptions
 ): Promise<void> => {
   fastify.get("/", {
+    schema: {
+      tags: ["personas"],
+      response: {
+        200: {
+          description: "Listado de personas",
+          content: {
+            "application/json": {
+              schema: {
+                type: "array",
+                items: Type.Ref("PersonaSchema"),
+              },
+            },
+          },
+        },
+      },
+    },
     handler: async function (request, reply) {
       const res = await db.query("SELECT * FROM public.personas");
       return res.rows;
@@ -31,10 +48,11 @@ const personaRoute: FastifyPluginAsync = async (
 
   fastify.post("/", {
     schema: {
+      tags: ["personas"],
       body: PersonaPostSchema,
       response: {
         200: {
-          description: "Listado de usuarios",
+          description: "Alta de persona",
           content: {
             "application/json": {
               schema: PersonaSchema,
