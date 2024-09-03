@@ -55,7 +55,7 @@ const personaRoute: FastifyPluginAsync = async (
           description: "Alta de persona",
           content: {
             "application/json": {
-              schema: PersonaSchema,
+              schema: Type.Ref("PersonaSchema"),
             },
           },
         },

@@ -23,19 +23,22 @@ export const PersonaSchema = Type.Object(
   { $id: "PersonaSchema" }
 );
 
-export const PersonaPostSchema = Type.Object({
-  ...PersonaSchema.properties,
-  contraseña: Type.String({
-    minLength: 8,
-    maxLength: 20,
-    pattern: passwordRegex.source,
-  }),
-  repetirContraseña: Type.String({
-    minLength: 8,
-    maxLength: 20,
-    pattern: passwordRegex.source,
-  }),
-});
+export const PersonaPostSchema = Type.Object(
+  {
+    ...PersonaSchema.properties,
+    contraseña: Type.String({
+      minLength: 8,
+      maxLength: 20,
+      pattern: passwordRegex.source,
+    }),
+    repetirContraseña: Type.String({
+      minLength: 8,
+      maxLength: 20,
+      pattern: passwordRegex.source,
+    }),
+  },
+  { $id: "PersonaPostSchema" }
+);
 
 export type PersonaType = Static<typeof PersonaSchema>;
 export type PersonaPostType = Static<typeof PersonaPostSchema>;
