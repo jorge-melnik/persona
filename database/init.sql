@@ -5,10 +5,10 @@ CREATE TABLE personas (
     id_persona SERIAL PRIMARY KEY,
     nombre TEXT NOT NULL,
     apellido TEXT NOT NULL,
-    email TEXT UNIQUE,
-    cedula TEXT UNIQUE,
-    rut BIGINT UNIQUE,
-    contraseña TEXT
+    email TEXT NOT NULL UNIQUE,
+    cedula TEXT NOT NULL UNIQUE,
+    rut BIGINT NOT NULL UNIQUE,
+    contraseña TEXT NOT NULL
 );
 
 -- Levantamos los datos de prueba.

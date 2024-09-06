@@ -1,23 +1,8 @@
 import { FastifyPluginAsync, FastifyPluginOptions } from "fastify";
 import { FastifyInstance } from "fastify/types/instance.js";
-import {
-  PersonaPostSchema,
-  PersonaPostType,
-  PersonaSchema,
-  PersonaType,
-} from "../../tipos/persona.js";
+import { PersonaPostSchema, PersonaPostType } from "../../tipos/persona.js";
 import db from "../../services/db.js";
 import { Type } from "@sinclair/typebox";
-
-const personas: PersonaType[] = [
-  {
-    nombre: "Juan",
-    apellido: "Pérez",
-    email: "juan.perez@example.com",
-    cedula: "3.456.789-0",
-    rut: "123456789123",
-  },
-];
 
 const personaRoute: FastifyPluginAsync = async (
   fastify: FastifyInstance,
@@ -26,6 +11,9 @@ const personaRoute: FastifyPluginAsync = async (
   fastify.get("/", {
     schema: {
       tags: ["personas"],
+      summary: "Obtener todas las personas",
+      description:
+        "Devuelve el listado completo de personas sin utilizar filtro alguno.",
       response: {
         200: {
           description: "Listado de personas",
@@ -33,7 +21,8 @@ const personaRoute: FastifyPluginAsync = async (
             "application/json": {
               schema: {
                 type: "array",
-                items: Type.Ref("PersonaSchema"),
+                // items: Type.Ref("PersonaSchema"),
+                items: { $ref: "PersonaSchema" },
               },
             },
           },
@@ -46,9 +35,44 @@ const personaRoute: FastifyPluginAsync = async (
     },
   });
 
+  fastify.get("/:id_persona", {
+    schema: {
+      tags: ["personas"],
+      description: "Descripción de la ruta /personas/:id_persona. ",
+      summary: "Obtener persona por su id.",
+      schema: {
+        params: {
+          type: "object",
+          properties: {
+            id_persona: { type: "integer" },
+          },
+        },
+      },
+      response: {
+        200: {
+          description: "Persona obtenida por id",
+          content: {
+            "application/json": {
+              schema: Type.Ref("PersonaSchema"),
+            },
+          },
+        },
+      },
+    },
+    handler: async function (request, reply) {
+      const { id_persona } = request.params as { id_persona: number };
+      const res = await db.query(
+        "SELECT * FROM public.personas WHERE id_persona=$1",
+        [id_persona]
+      );
+      return res.rows[0];
+    },
+  });
+
   fastify.post("/", {
     schema: {
       tags: ["personas"],
+      description: "Dar de alta una persona",
       body: PersonaPostSchema,
       response: {
         200: {
