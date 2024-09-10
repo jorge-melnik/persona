@@ -30,6 +30,8 @@ export const PersonaPostSchema = Type.Object(
       minLength: 8,
       maxLength: 20,
       pattern: passwordRegex.source,
+      errorMessage:
+        "La contraseña debe contener entre 8 y 20 caracteres, 1 digito, 1 mayúsculas, 1 minúsculas y un caracter especial.",
     }),
     repetirContraseña: Type.String({
       minLength: 8,

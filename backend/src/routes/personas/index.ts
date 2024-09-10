@@ -21,7 +21,6 @@ const personaRoute: FastifyPluginAsync = async (
             "application/json": {
               schema: {
                 type: "array",
-                // items: Type.Ref("PersonaSchema"),
                 items: { $ref: "PersonaSchema" },
               },
             },
@@ -29,6 +28,7 @@ const personaRoute: FastifyPluginAsync = async (
         },
       },
     },
+    onRequest: fastify.authenticate,
     handler: async function (request, reply) {
       const res = await db.query("SELECT * FROM public.personas");
       return res.rows;
